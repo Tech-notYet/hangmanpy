@@ -6,24 +6,28 @@ import tkinter.ttk as ttk
 
 
 def startup_app():
+    # Top level window
     APP = tk.Tk()
-    spl_props = prepare_splash()
+    APP.title('Hangman In Python')
+    APP.rowconfigure(0, minsize=800, weight=1)
+    APP.columnconfigure([0, 1, 2], weight=1)
+
+    initialize_frame(APP)
 
 
-# Splash Window
+def initialize_frame(names: typ.Tuple[str], positions: typ.Tuple[int], master: tk.Widget = None) -> ttk.Frame:
+    """Take a name, master, and int (0,1,2 representing left-center-right),
+    and return the specific Frame widget"""
 
-
-def get_splash_window(master: typ.Optional[str] = None, **fmt_opts: typ.Dict) -> ttk.Frame:
-    if master is None:
-        return ttk.Frame(**fmt_opts)
-    else:
-        return ttk.Frame(master, **fmt_opts)
-
-
-def prepare_splash() -> typ.Tuple[typ.Tuple]:
-    return (('height', 500), ('width', 250), ('padding', 10),
-            ('relief', tk.GROOVE), ('name', 'splash_window'))
-
-# Main Activity Window
-
-    # TODO create main window
+    if position == 0:
+        # Left Frame containing the canvas widget
+        left_parent = ttk.Frame(master, class_='ParentFrame', height=800, width=700, padding=15,
+                            relief=tk.GROOVE, name=name, borderwidth=1)
+    if position == 1:
+        # Center Frame containing the canvas widget
+        right_parent = ttk.Frame(master, class_='ParentFrame', height=800, width=700, padding=15,
+                            relief=tk.GROOVE, name=name, borderwidth=1)
+    if position == 2:
+        # Right Frame containing the canvas widget
+        left_parent = ttk.Frame(master, class_='ParentFrame', height=800, width=700, padding=15,
+                            relief=tk.GROOVE, name=name, borderwidth=1)
