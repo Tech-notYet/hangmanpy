@@ -1,6 +1,6 @@
 import tkinter.ttk as ttk
 from tkinter.ttk import tkinter as tk
-from typing import Any, List, Mapping, Optional, Sequence, Tuple, Type, TypeVar, Union, NewType
+from typing import *
 
 GenericWidget = TypeVar('GenericWidget',
                         ttk.Button,
@@ -27,6 +27,7 @@ GenericWidget = TypeVar('GenericWidget',
                         ttk.LabeledScale,
                         ttk.OptionMenu)
 
+WidgetOpts = NewType('WidgetOpts', Mapping[str, Union[str, int]])
 
 def startup_app() -> None:
     APP_ROWS = [0]
@@ -44,30 +45,29 @@ def startup_app() -> None:
     # Top level window
     APP = tk.Tk()
     APP.title('Hangman In Python')
-    APP.rowconfigure(APP_ROWS, weight=1)
-    APP.columnconfigure(APP_COLS, weight=1)
+    APP.rowconfigure(APP_ROWS, weight=1, minsize=400)
+    APP.columnconfigure(APP_COLS, weight=1, minsize=400)
 
     left_parent, center_parent, right_parent = initialize_frame(['left_parent', 'center_parent', 'right_parent'], APP)
     for parent in left_parent, center_parent, right_parent:
         if parent.winfo_name() == 'left_parent':
             parent.rowconfigure(LP_ROWS, weight=1)
             parent.columnconfigure(LP_COLS, weight=1)
-            parent.grid(row=APP_ROWS, column=APP_COLS[0])
+            parent.grid(sticky=tk.NSEW, row=APP_ROWS, column=APP_COLS[0])
         elif parent.winfo_name() == 'center_parent':
             parent.rowconfigure(CP_ROWS, weight=1)
             parent.columnconfigure(CP_COLS, weight=1)
-            parent.grid(row=APP_ROWS, column=APP_COLS[1])
+            parent.grid(sticky=tk.NSEW, row=APP_ROWS, column=APP_COLS[1])
         else:
             parent.rowconfigure(RP_ROWS, weight=1)
             parent.columnconfigure(RP_COLS, weight=1)
-            parent.grid(row=APP_ROWS, column=APP_COLS[2])
-        parent.grid(sticky=tk.NSEW)
+            parent.grid(sticky=tk.NSEW, row=APP_ROWS, column=APP_COLS[2])
 
     APP.mainloop()
 
 
-def grid_widgets(widget: Type[GenericWidget], widget_opts: Mapping[str, Any]) -> type(None):
-    pass
+def grid_widgets(widget: Type[GenericWidget], widget_opts: Mapping[str, Type[Sequence]]) -> None:
+    widget.grid_configure(**widget_opts)
 
 
 def initialize_frame(names: List[str], master: Optional[tk.Tk] = None) -> Tuple[ttk.Frame]:
@@ -76,7 +76,7 @@ def initialize_frame(names: List[str], master: Optional[tk.Tk] = None) -> Tuple[
 
     try:
         # Left Frame containing the canvas widget
-        left = ttk.Frame(master, class_='ParentFrame', height=600, width=800, padding=15,
+        left = ttk.Frame(master, class_='ParentFrame', height=600, width=500, padding=15,
                          relief=tk.GROOVE, name=names[0], borderwidth=1)
         # Center Frame containing the Text widget to display previous choices
         center = ttk.Frame(master, class_='ParentFrame', width=500, padding=15,
