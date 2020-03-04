@@ -147,6 +147,5 @@ $RECYCLE.BIN/
 # End of https://www.gitignore.io/api/visualstudiocode,python,windows
 
 orderwords.py
-words.txt
 gitignore.txt
-.gitignore
+words.txt
