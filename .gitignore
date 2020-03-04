@@ -148,3 +148,5 @@ $RECYCLE.BIN/
 
 orderwords.py
 words.txt
+gitignore.txt
+.gitignore
