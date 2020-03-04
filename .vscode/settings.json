@@ -1,0 +1,6 @@
+{
+    "scm.defaultViewMode": "tree",
+    "git.countBadge": "tracked",
+    "git.smartCommitChanges": "tracked",
+    "git.untrackedChanges": "separate"
+}
