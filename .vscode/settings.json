@@ -3,5 +3,6 @@
     "git.countBadge": "tracked",
     "git.smartCommitChanges": "tracked",
     "git.untrackedChanges": "separate",
-    "scm.diffDecorations": "all"
+    "scm.diffDecorations": "all",
+    "python.linting.enabled": true
 }
