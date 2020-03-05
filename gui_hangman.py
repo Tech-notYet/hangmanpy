@@ -1,33 +1,65 @@
 import typing as Tp
-from collections import defaultdict
+from collections import defaultdict, namedtuple
 from tkinter import ttk
 from tkinter.ttk import tkinter as tk
 
+WIDGETS = ('Checkbutton', 'Combobox', 'Entry', 'Frame', 'Label', 'LabelFrame', 'LabeledScale', 'Labelframe',
+            'Menubutton', 'Notebook', 'OptionMenu', 'PanedWindow', 'Panedwindow', 'Progressbar', 'Radiobutton',
+            'Scale', 'Scrollbar', 'Separator', 'Sizegrip', 'Spinbox', 'Toplevel', 'Treeview')
 
-class WidgetOptions():
+def return_widget_options(widgetname: str) -> Tp.Sequence[str]:
+        OPTIONS = defaultdict(list)
+        if widgetname in WIDGETS:
+            source = ''
+            try:
+                if widgetname == 'Canvas' or widgetname == 'Toplevel':
+                    source = 'tk.'+widgetname+'().keys()'
+                elif widgetname == 'OptionMenu':
+                    source = 'ttk.'+widgetname+'(None, None).keys()'
+                else:
+                    source = 'ttk.'+widgetname+'().keys()'
+                obj = eval(compile(source, '<string>', 'eval'))
+                OPTIONS[widgetname].extend(obj)
+            except Exception as e:
+                print(f'{widgetname}\t{e.args}')
+        return OPTIONS[widgetname]
+
+# BUTTON = namedtuple('Button', ['command', 'default', 'takefocus', 'text', 'textvariable',
+#                                'underline', 'width', 'image', 'compound', 'padding', 'state', 'cursor', 'style', 'class'])
+CANVAS = namedtuple('Canvas', return_widget_options('Canvas'))
+
+
+
+def widget_options():
+
     def __init__(self):
         super().__init__()
-        self.WIDGETS = ['Button', 'Canvas', 'Checkbutton', 'Combobox', 'Entry', 'Frame', 'Label', 'LabelFrame', 'LabeledScale', 'Labelframe',
-                        'Menubutton', 'Notebook', 'OptionMenu', 'PanedWindow', 'Panedwindow', 'Progressbar', 'Radiobutton',
-                        'Scale', 'Scrollbar', 'Separator', 'Sizegrip', 'Spinbox', 'Style', 'Toplevel', 'Treeview']
-        self.OPTIONS = defaultdict()
-    
-    def factory_func(self, widget: str):
-        if widget in self.WIDGETS:
+        self.OPTIONS = defaultdict(list)
+
+    def return_widget_options(self, widgetnames: Tp.Sequence[str]) -> Tp.Sequence[Tp.Se]:
+        OPTIONS = self.OPTIONS
+        if widgetname in self.WIDGETS:
+            source = ''
             try:
-                comp_str = 'ttk.' + widget
-            except SyntaxError as e:
-                pass
-            except ValueError as e:
-                pass
-            except:
-                pass
+                if widgetname == 'Canvas' or widgetname == 'Toplevel':
+                    source = 'tk.'+widgetname+'().keys()'
+                elif widgetname == 'OptionMenu':
+                    source = 'ttk.'+widgetname+'(None, None).keys()'
+                else:
+                    source = 'ttk.'+widgetname+'().keys()'
+                obj = eval(compile(source, '<string>', 'eval'))
+                OPTIONS[widgetname].extend(obj)
+            except Exception as e:
+                print(f'{widgetname}\t{e.args}')
+        return OPTIONS
 
 # Top structure classes
 
 
 class LeftFrame(ttk.Frame):
     """Child of MainApplication. It contains the Canvas widget"""
+
+    __doc__ = WidgetOptions().return_widget_options()
 
     def __init__(self, master=None, **kw):
         super().__init__(master=master, **kw)
@@ -47,7 +79,7 @@ class RightFrame(ttk.Frame):
         self.rowconfigure([0, 1, 2], weight=1)
         self.columnconfigure(0, weight=1)
         # Grid into column 2 of MainApp
-        self.grid(column=1, row=0, sticky=tk.NSEW, padx=20, pady=20)
+        self.grid(column=1, row=0, sticky=tk.NSEW)
 
 
 class HangmanCanvas(tk.Canvas):
@@ -56,7 +88,9 @@ class HangmanCanvas(tk.Canvas):
         opts = {
             'bg': '#f8f8f8',
             'relief': tk.GROOVE,
-            'cursor': 'man'
+            'cursor': 'man',
+            'height': master['height'] - 50,
+            'width': master['width'] - 50
         }
         self.configure(**opts)
         self.pack()
@@ -69,6 +103,7 @@ class HangmanCanvas(tk.Canvas):
 class GuessesLabel(ttk.Label):
     def __init__(self, master=None, **kw):
         super().__init__(master=master, **kw)
+        self.configure()
 
 
 class GuessEntry(ttk.Entry):
@@ -77,6 +112,7 @@ class GuessEntry(ttk.Entry):
 
 
 class SubmitButton(ttk.Button):
+
     def __init__(self, master=None, **kw):
         super().__init__(master=master, **kw)
 
