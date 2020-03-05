@@ -1,7 +1,27 @@
 import typing as Tp
-from tkinter import ttk as ttk
+from collections import defaultdict
+from tkinter import ttk
 from tkinter.ttk import tkinter as tk
-from itertools import starmap
+
+
+class WidgetOptions():
+    def __init__(self):
+        super().__init__()
+        self.WIDGETS = ['Button', 'Canvas', 'Checkbutton', 'Combobox', 'Entry', 'Frame', 'Label', 'LabelFrame', 'LabeledScale', 'Labelframe',
+                        'Menubutton', 'Notebook', 'OptionMenu', 'PanedWindow', 'Panedwindow', 'Progressbar', 'Radiobutton',
+                        'Scale', 'Scrollbar', 'Separator', 'Sizegrip', 'Spinbox', 'Style', 'Toplevel', 'Treeview']
+        self.OPTIONS = defaultdict()
+    
+    def factory_func(self, widget: str):
+        if widget in self.WIDGETS:
+            try:
+                comp_str = 'ttk.' + widget
+            except SyntaxError as e:
+                pass
+            except ValueError as e:
+                pass
+            except:
+                pass
 
 # Top structure classes
 
@@ -11,8 +31,9 @@ class LeftFrame(ttk.Frame):
 
     def __init__(self, master=None, **kw):
         super().__init__(master=master, **kw)
-        self.configure(width=400, height=400, padding='0.25i', borderwidth=1, relief=tk.RIDGE)
-        self.grid(column=0, row=0, sticky=tk.NSEW, padx=20, pady=20)
+        self.configure(width=400, height=400, padding='0.25i',
+                       borderwidth=1, relief=tk.RIDGE)
+        self.grid(sticky=tk.NSEW)
 
 
 class RightFrame(ttk.Frame):
@@ -20,7 +41,8 @@ class RightFrame(ttk.Frame):
 
     def __init__(self, master=None, **kw):
         super().__init__(master=master, **kw)
-        self.configure(width=400, height=400, padding='0.25i', borderwidth=1, relief=tk.GROOVE)
+        self.configure(width=400, height=400, padding='0.25i',
+                       borderwidth=1, relief=tk.GROOVE)
         # 1x3 Grid to fit widgets
         self.rowconfigure([0, 1, 2], weight=1)
         self.columnconfigure(0, weight=1)
@@ -31,7 +53,13 @@ class RightFrame(ttk.Frame):
 class HangmanCanvas(tk.Canvas):
     def __init__(self, master=None, **kw):
         super().__init__(master=master, **kw)
-        self.grid(sticky=tk.NSEW)
+        opts = {
+            'bg': '#f8f8f8',
+            'relief': tk.GROOVE,
+            'cursor': 'man'
+        }
+        self.configure(**opts)
+        self.pack()
         line = []
         for y in range(5, 125, 5):
             line.append([5, y])
