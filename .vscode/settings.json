@@ -3,6 +3,5 @@
     "git.countBadge": "tracked",
     "git.smartCommitChanges": "tracked",
     "git.untrackedChanges": "separate",
-    "scm.diffDecorations": "all",
-    "scm.alwaysShowProviders": true
+    "scm.diffDecorations": "all"
 }
