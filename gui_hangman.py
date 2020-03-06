@@ -1,57 +1,45 @@
-import typing as Tp
+import typing as tp
 from collections import defaultdict, namedtuple
 from tkinter import ttk
 from tkinter.ttk import tkinter as tk
 
-WIDGETS = ('Checkbutton', 'Combobox', 'Entry', 'Frame', 'Label', 'LabelFrame', 'LabeledScale', 'Labelframe',
-            'Menubutton', 'Notebook', 'OptionMenu', 'PanedWindow', 'Panedwindow', 'Progressbar', 'Radiobutton',
-            'Scale', 'Scrollbar', 'Separator', 'Sizegrip', 'Spinbox', 'Toplevel', 'Treeview')
-
-def return_widget_options(widgetname: str) -> Tp.Sequence[str]:
-        OPTIONS = defaultdict(list)
-        if widgetname in WIDGETS:
-            source = ''
-            try:
-                if widgetname == 'Canvas' or widgetname == 'Toplevel':
-                    source = 'tk.'+widgetname+'().keys()'
-                elif widgetname == 'OptionMenu':
-                    source = 'ttk.'+widgetname+'(None, None).keys()'
-                else:
-                    source = 'ttk.'+widgetname+'().keys()'
-                obj = eval(compile(source, '<string>', 'eval'))
-                OPTIONS[widgetname].extend(obj)
-            except Exception as e:
-                print(f'{widgetname}\t{e.args}')
-        return OPTIONS[widgetname]
-
-# BUTTON = namedtuple('Button', ['command', 'default', 'takefocus', 'text', 'textvariable',
-#                                'underline', 'width', 'image', 'compound', 'padding', 'state', 'cursor', 'style', 'class'])
-CANVAS = namedtuple('Canvas', return_widget_options('Canvas'))
+WIDGETTYPES: tp.Tuple[str, ...] = ('Button', 'Canvas', 'Checkbutton', 'Combobox', 'Entry', 'Frame', 'Label',
+                                   'LabelFrame', 'LabeledScale', 'Labelframe', 'Menubutton', 'Notebook',
+                                   'OptionMenu', 'PanedWindow', 'Panedwindow', 'Progressbar', 'Radiobutton',
+                                   'Scale', 'Scrollbar', 'Separator', 'Sizegrip', 'Spinbox', 'Toplevel', 'Treeview')
+DDICT = tp.DefaultDict[str, tp.Sequence[str]]
 
 
+class WidgetOptions():
+    OPTIONS: DDICT
 
-def widget_options():
+    def __new__(cls):
+        def _widget_options() -> DDICT:
+            _OPTIONS = defaultdict(list)
+            for widget in WIDGETTYPES:
+                source = ''
+                try:
+                    if widget in ('Canvas', 'Toplevel'):
+                        source = 'tk.' + widget + '().keys()'
+                    elif widget == 'OptionMenu':
+                        source = 'ttk.' + widget + '(None, None).keys()'
+                    else:
+                        source = 'ttk.'+widget+'().keys()'
+                    obj = eval(compile(source, '<string>', 'eval'))
+                    _OPTIONS[widget].extend(obj)
+                except Exception as e:
+                    print(f'{widget}\t{e.args}')
+            return _OPTIONS
+        cls.OPTIONS = _widget_options()
 
-    def __init__(self):
-        super().__init__()
-        self.OPTIONS = defaultdict(list)
+    @classmethod
+    def create_widget_tuple(cls, name: str) -> tp.Type[namedtuple]:
+        if name not in WIDGETTYPES:
+            return tuple()
+        return namedtuple(name, cls.OPTIONS[name])
 
-    def return_widget_options(self, widgetnames: Tp.Sequence[str]) -> Tp.Sequence[Tp.Se]:
-        OPTIONS = self.OPTIONS
-        if widgetname in self.WIDGETS:
-            source = ''
-            try:
-                if widgetname == 'Canvas' or widgetname == 'Toplevel':
-                    source = 'tk.'+widgetname+'().keys()'
-                elif widgetname == 'OptionMenu':
-                    source = 'ttk.'+widgetname+'(None, None).keys()'
-                else:
-                    source = 'ttk.'+widgetname+'().keys()'
-                obj = eval(compile(source, '<string>', 'eval'))
-                OPTIONS[widgetname].extend(obj)
-            except Exception as e:
-                print(f'{widgetname}\t{e.args}')
-        return OPTIONS
+
+
 
 # Top structure classes
 
@@ -59,10 +47,10 @@ def widget_options():
 class LeftFrame(ttk.Frame):
     """Child of MainApplication. It contains the Canvas widget"""
 
-    __doc__ = WidgetOptions().return_widget_options()
-
     def __init__(self, master=None, **kw):
         super().__init__(master=master, **kw)
+        self.Frame = WidgetOptions.create_widget_tuple('Frame')
+        self._options.width
         self.configure(width=400, height=400, padding='0.25i',
                        borderwidth=1, relief=tk.RIDGE)
         self.grid(sticky=tk.NSEW)

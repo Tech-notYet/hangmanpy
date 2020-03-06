@@ -5,25 +5,25 @@ from tkinter import ttk
 from tkinter.ttk import tkinter as tk
 from pprint import pprint as pp
 
-DDict = tp.DefaultDict[str, tp.Sequence[str]]
+DDICT = tp.DefaultDict[str, tp.Sequence[str]]
 
+WIDGETS: tp.Tuple[str, ...] = ('Button', 'Canvas', 'Checkbutton', 'Combobox', 'Entry', 'Frame', 'Label', 'LabelFrame', 'LabeledScale', 'Labelframe',
+                                'Menubutton', 'Notebook', 'OptionMenu', 'PanedWindow', 'Panedwindow', 'Progressbar', 'Radiobutton',
+                                'Scale', 'Scrollbar', 'Separator', 'Sizegrip', 'Spinbox', 'Toplevel', 'Treeview')
 
 class WidgetOptions():
-    WIDGETS: tp.Tuple[str, ...] = ('Button', 'Canvas', 'Checkbutton', 'Combobox', 'Entry', 'Frame', 'Label', 'LabelFrame', 'LabeledScale', 'Labelframe',
-                                   'Menubutton', 'Notebook', 'OptionMenu', 'PanedWindow', 'Panedwindow', 'Progressbar', 'Radiobutton',
-                                   'Scale', 'Scrollbar', 'Separator', 'Sizegrip', 'Spinbox', 'Toplevel', 'Treeview')
+    OPTIONS: DDICT
 
+    def __new__(cls):
+        cls.OPTIONS = cls.widget_options()
+        return cls
     def __init__(self):
-        super().__init__()
-        self.OPTIONS: DDict = defaultdict(list)
-
-    @classmethod
-    def widget_options(cls, widgetname: tp.Optional[str] = None) -> DDict:
+        self.OPTIONS = self.widget_options()
+    
+    @staticmethod
+    def widget_options() -> DDICT:
         OPTIONS = defaultdict(list)
-        wgname = widgetname
-        if wgname is None:
-            wgname = 'Frame'
-        if wgname in cls.WIDGETS:
+        for wgname in WIDGETS:
             source = ''
             try:
                 if wgname in ('Canvas', 'Toplevel'):
@@ -36,11 +36,20 @@ class WidgetOptions():
                 OPTIONS[wgname].extend(obj)
             except Exception as e:
                 print(f'{wgname}\t{e.args}')
-        return OPTIONS[wgname]
+        return OPTIONS
 
 
 if __name__ == '__main__':
-    pp(WidgetOptions.widget_options(sys.argv[1]))
+    wo = WidgetOptions()
+    for wg in wo.OPTIONS:
+        print(f"({wg}, {wo.OPTIONS[wg]})")
+    # opt_set = [set(wo.OPTIONS[wg]) for wg in wo.OPTIONS]
+    # for opt in opt_set:
+    #     if set_ > opt:
+    #         opt_set.intersection_update()
+    #     print({wg: dict((w,None) for w in _)})
+        # print(f"namedtuple({wg}, '{' '.join(wo.OPTIONS[wg])}')")
+    # pp(WidgetOptions.widget_options(sys.argv[1]))
     # wg = wo.WIDGETS[sys.argv[1]]
     # wopts = wo._widget_options(wg)
     # canvas = namedtuple(wg, wopts[wg])
