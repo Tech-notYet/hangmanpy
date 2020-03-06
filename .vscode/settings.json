@@ -3,6 +3,7 @@
     "git.countBadge": "tracked",
     "git.smartCommitChanges": "tracked",
     "git.untrackedChanges": "separate",
-    "scm.diffDecorations": "all",
-    "python.linting.enabled": true
+    "scm.diffDecorations": "gutter",
+    "python.linting.enabled": true,
+    "workbench.settings.editor": "json"
 }

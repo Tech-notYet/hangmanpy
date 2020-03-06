@@ -10,44 +10,14 @@ WIDGETTYPES: tp.Tuple[str, ...] = ('Button', 'Canvas', 'Checkbutton', 'Combobox'
 DDICT = tp.DefaultDict[str, tp.Sequence[str]]
 
 
-class WidgetOptions():
-    OPTIONS: DDICT
-
-    def __new__(cls):
-        def _widget_options() -> DDICT:
-            _OPTIONS = defaultdict(list)
-            for widget in WIDGETTYPES:
-                source = ''
-                try:
-                    if widget in ('Canvas', 'Toplevel'):
-                        source = 'tk.' + widget + '().keys()'
-                    elif widget == 'OptionMenu':
-                        source = 'ttk.' + widget + '(None, None).keys()'
-                    else:
-                        source = 'ttk.'+widget+'().keys()'
-                    obj = eval(compile(source, '<string>', 'eval'))
-                    _OPTIONS[widget].extend(obj)
-                except Exception as e:
-                    print(f'{widget}\t{e.args}')
-            return _OPTIONS
-        cls.OPTIONS = _widget_options()
-
-    @classmethod
-    def create_widget_tuple(cls, name: str) -> tp.Type[namedtuple]:
-        if name not in WIDGETTYPES:
-            return tuple()
-        return namedtuple(name, cls.OPTIONS[name])
-
-
-# Top structure classes
-
 
 class LeftFrame(ttk.Frame):
     """Child of MainApplication. It contains the Canvas widget"""
 
+    _FRAME = ['borderwidth', 'padding', 'relief', 'width', 'height', 'takefocus', 'cursor', 'style', 'class']
     def __init__(self, master=None, **kw):
         super().__init__(master=master, **kw)
-        self.configure(width=400, height=400, padding='0.25i',
+        self.configure(width=400, height=400,
                        borderwidth=1, relief=tk.RIDGE)
         self.grid(sticky=tk.NSEW)
 
@@ -67,6 +37,9 @@ class RightFrame(ttk.Frame):
 
 
 class HangmanCanvas(tk.Canvas):
+    """Canvas Widget used to draw the hangman image
+    for each incorrect guess by the player"""
+
     def __init__(self, master=None, **kw):
         super().__init__(master=master, **kw)
         opts = {
@@ -85,6 +58,8 @@ class HangmanCanvas(tk.Canvas):
 
 
 class GuessesLabelframe(ttk.Labelframe):
+    """Labelframe to contain a Label Widget which displays players previous guesses"""
+
     def __init__(self, master=None, **kw):
         super().__init__(master=master, **kw)
         self.configure(borderwidth=1, relief=tk.GROOVE, padding=5,
@@ -95,6 +70,10 @@ class GuessesLabelframe(ttk.Labelframe):
         self.guesses_label = ttk.Label(self, textvariable=self.guesses_var)
         self.guesses_label.pack(fill=tk.BOTH, expand=True)
 
+
+class GuessesLabel(ttk.Label):
+    def __init__(self, master=None, **kw):
+        super().__init__(master=master, **kw)
 
 class GuessEntry(ttk.Entry):
     def __init__(self, master=None, widget=None, **kw):
