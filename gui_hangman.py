@@ -1,7 +1,7 @@
 import typing as tp
 from collections import defaultdict, namedtuple
 from tkinter import ttk
-from tkinter.ttk import tkinter as tk
+import tkinter as tk
 
 WIDGETTYPES: tp.Tuple[str, ...] = ('Button', 'Canvas', 'Checkbutton', 'Combobox', 'Entry', 'Frame', 'Label',
                                    'LabelFrame', 'LabeledScale', 'Labelframe', 'Menubutton', 'Notebook',
@@ -39,8 +39,6 @@ class WidgetOptions():
         return namedtuple(name, cls.OPTIONS[name])
 
 
-
-
 # Top structure classes
 
 
@@ -49,8 +47,6 @@ class LeftFrame(ttk.Frame):
 
     def __init__(self, master=None, **kw):
         super().__init__(master=master, **kw)
-        self.Frame = WidgetOptions.create_widget_tuple('Frame')
-        self._options.width
         self.configure(width=400, height=400, padding='0.25i',
                        borderwidth=1, relief=tk.RIDGE)
         self.grid(sticky=tk.NSEW)
@@ -88,15 +84,23 @@ class HangmanCanvas(tk.Canvas):
         self.create_line(line)
 
 
-class GuessesLabel(ttk.Label):
+class GuessesLabelframe(ttk.Labelframe):
     def __init__(self, master=None, **kw):
         super().__init__(master=master, **kw)
-        self.configure()
+        self.configure(borderwidth=1, relief=tk.GROOVE, padding=5,
+                       text='Previous Guesses:', labelanchor=tk.NW)
+        self.grid(row=0, column=0, sticky=tk.EW, ipadx=25, ipady=25, padx=5, pady=5)
+        self.guesses = []
+        self.guesses_var = tk.Variable(value=self.guesses)
+        self.guesses_label = ttk.Label(self, textvariable=self.guesses_var)
+        self.guesses_label.pack(fill=tk.BOTH, expand=True)
 
 
 class GuessEntry(ttk.Entry):
     def __init__(self, master=None, widget=None, **kw):
         super().__init__(master=master, widget=widget, **kw)
+        self.configure(width=50)
+        self.grid(row=1, padx=10, pady=5, sticky=tk.EW)
 
 
 class SubmitButton(ttk.Button):
@@ -123,7 +127,7 @@ class MainApplication(ttk.Frame):
         self.left = LeftFrame(self)
         self.right = RightFrame(self)
         self.hangmanCanvas = HangmanCanvas(self.left)
-        self.guessesLabel = GuessesLabel(self.right)
+        self.guessesLabel = GuessesLabelframe(self.right)
         self.guessEntry = GuessEntry(self.right)
         self.submitButton = SubmitButton(self.right)
         self.clearButton = ClearButton(self.right)
