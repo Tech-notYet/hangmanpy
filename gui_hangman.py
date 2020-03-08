@@ -9,7 +9,9 @@ WIDGETTYPES: tp.Tuple[str, ...] = ('Button', 'Canvas', 'Checkbutton', 'Combobox'
                                    'Scale', 'Scrollbar', 'Separator', 'Sizegrip', 'Spinbox', 'Toplevel', 'Treeview')
 DDICT = tp.DefaultDict[str, tp.Sequence[str]]
 
-
+class WidgetStyle(ttk.Style):
+    def __init__(self, master=None):
+        super().__init__(master=master)
 
 class LeftFrame(ttk.Frame):
     """Child of MainApplication. It contains the Canvas widget"""

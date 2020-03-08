@@ -108,7 +108,6 @@ dmypy.json
 .pyre/
 
 ### VisualStudioCode ###
-.vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
@@ -146,7 +145,9 @@ $RECYCLE.BIN/
 
 # End of https://www.gitignore.io/api/visualstudiocode,python,windows
 
+### Personal Ignores ###
 orderwords.py
 gitignore.txt
 words.txt
 ignore_widgetoptions.py
+ignored_items/*
