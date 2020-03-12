@@ -9,19 +9,14 @@ WIDGETTYPES: tp.Tuple[str, ...] = ('Button', 'Canvas', 'Checkbutton', 'Combobox'
                                    'Scale', 'Scrollbar', 'Separator', 'Sizegrip', 'Spinbox', 'Toplevel', 'Treeview')
 DDICT = tp.DefaultDict[str, tp.Sequence[str]]
 
-class WidgetStyle(ttk.Style):
-    def __init__(self, master=None):
-        super().__init__(master=master)
 
 class LeftFrame(ttk.Frame):
     """Child of MainApplication. It contains the Canvas widget"""
 
-    _FRAME = ['borderwidth', 'padding', 'relief', 'width', 'height', 'takefocus', 'cursor', 'style', 'class']
     def __init__(self, master=None, **kw):
         super().__init__(master=master, **kw)
-        self.configure(width=400, height=400,
-                       borderwidth=1, relief=tk.RIDGE)
-        self.grid(sticky=tk.NSEW)
+        self.configure(borderwidth=0, width=500, height=500, padding=(25, 25))
+        self.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, anchor=tk.CENTER)
 
 
 class RightFrame(ttk.Frame):
@@ -29,30 +24,25 @@ class RightFrame(ttk.Frame):
 
     def __init__(self, master=None, **kw):
         super().__init__(master=master, **kw)
-        self.configure(width=400, height=400, padding='0.25i',
-                       borderwidth=1, relief=tk.GROOVE)
-        # 1x3 Grid to fit widgets
-        self.rowconfigure([0, 1, 2], weight=1)
-        self.columnconfigure(0, weight=1)
-        # Grid into column 2 of MainApp
-        self.grid(column=1, row=0, sticky=tk.NSEW)
+        self.configure(relief=tk.RIDGE, width=500,
+                       height=500, padding=(25, 0, 0, 0))
+        self.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, anchor=tk.CENTER)
 
 
 class HangmanCanvas(tk.Canvas):
     """Canvas Widget used to draw the hangman image
     for each incorrect guess by the player"""
 
-    def __init__(self, master=None, **kw):
+    def __init__(self, master, **kw):
         super().__init__(master=master, **kw)
         opts = {
             'bg': '#f8f8f8',
-            'relief': tk.GROOVE,
-            'cursor': 'man',
-            'height': master['height'] - 50,
-            'width': master['width'] - 50
+            'borderwidth': 1,
+            'relief': tk.RIDGE
         }
         self.configure(**opts)
-        self.pack()
+        self.pack(fill=tk.Y, expand=True, anchor=tk.N,
+                  padx=2, pady=2)
         line = []
         for y in range(5, 125, 5):
             line.append([5, y])
@@ -62,58 +52,66 @@ class HangmanCanvas(tk.Canvas):
 class GuessesLabelframe(ttk.Labelframe):
     """Labelframe to contain a Label Widget which displays players previous guesses"""
 
-    def __init__(self, master=None, **kw):
+    def __init__(self, master, **kw):
         super().__init__(master=master, **kw)
-        self.configure(borderwidth=1, relief=tk.GROOVE, padding=5,
-                       text='Previous Guesses:', labelanchor=tk.NW)
-        self.grid(row=0, column=0, sticky=tk.EW, ipadx=25, ipady=25, padx=5, pady=5)
-        self.guesses = []
-        self.guesses_var = tk.Variable(value=self.guesses)
-        self.guesses_label = ttk.Label(self, textvariable=self.guesses_var)
-        self.guesses_label.pack(fill=tk.BOTH, expand=True)
+        self.configure(text='Previous Guesses:', labelanchor=tk.NW, style='TLabelframe')
+        self.pack(anchor=tk.N, fill=tk.X, expand=True,
+                  ipadx=5, ipady=5, padx=25, pady=10)
 
 
 class GuessesLabel(ttk.Label):
-    def __init__(self, master=None, **kw):
+    def __init__(self, master, **kw):
         super().__init__(master=master, **kw)
+        self.guess_list = set()
+        self.guesses = tk.StringVar()
+        self.configure(textvariable=self.guesses, style='TLabel')
+        self.pack(anchor=tk.CENTER, fill=tk.X, expand=True, padx=25, pady=25)
+
 
 class GuessEntry(ttk.Entry):
-    def __init__(self, master=None, widget=None, **kw):
-        super().__init__(master=master, widget=widget, **kw)
-        self.configure(width=50)
-        self.grid(row=1, padx=10, pady=5, sticky=tk.EW)
+    def __init__(self, master, widget=None, **kw):
+        super().__init__(master=master, **kw)
+        self.configure(width=50, style='TEntry')
+        self.pack(ipadx=5, ipady=5, padx=25, pady=25, anchor=tk.N,
+                  fill=tk.X, expand=True)
 
 
 class SubmitButton(ttk.Button):
 
-    def __init__(self, master=None, **kw):
+    def __init__(self, master, **kw):
         super().__init__(master=master, **kw)
 
 
 class ClearButton(ttk.Button):
-    def __init__(self, master=None, **kw):
+    def __init__(self, master, **kw):
         super().__init__(master=master, **kw)
 
 
-class MainApplication(ttk.Frame):
-    def __init__(self, master=None, **kw):
-        super().__init__(master=master, **kw)
-        top = self.winfo_toplevel()
-        top.rowconfigure(0, weight=1, minsize=100)
-        top.columnconfigure(0, weight=1, minsize=100)
-        self.rowconfigure(0, weight=1, minsize=100)
-        self.columnconfigure([0, 1], weight=1, minsize=100)
-        self.grid(sticky=tk.NSEW, padx=25, pady=25)
+class MainApplication():
+    def __init__(self):
+        # top = self.winfo_toplevel()
+        # top.rowconfigure(0, weight=1, minsize=100)
+        # top.columnconfigure(0, weight=1, minsize=100)
+        # self.rowconfigure(0, weight=1, minsize=100)
+        # self.columnconfigure([0, 1], weight=1, minsize=100)
+        # self.pack_configure(anchor=tk.CENTER, fill=tk.BOTH, expand=True, padx=5, pady=5)
 
-        self.left = LeftFrame(self)
-        self.right = RightFrame(self)
+        self.root = tk.Tk()
+        self.style = ttk.Style(self.root)
+        self.set_default_styles()
+        self.left = LeftFrame(self.root)
+        self.right = RightFrame(self.root)
         self.hangmanCanvas = HangmanCanvas(self.left)
-        self.guessesLabel = GuessesLabelframe(self.right)
+        self.guessesLFrame = GuessesLabelframe(self.right)
+        self.guessesLabel = GuessesLabel(self.guessesLFrame)
         self.guessEntry = GuessEntry(self.right)
-        self.submitButton = SubmitButton(self.right)
-        self.clearButton = ClearButton(self.right)
+        # self.submitButton = SubmitButton(self.right)
+        # self.clearButton = ClearButton(self.right)
+
+    def set_default_styles(self):
+        self.style.theme_use('default')
 
 
-if __name__ == '__main__':
-    main = MainApplication()
-    main.mainloop()
+# if __name__ == '__main__':
+#     main = MainApplication()
+#     main.root.mainloop()
